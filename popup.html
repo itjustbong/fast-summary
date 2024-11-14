@@ -19,8 +19,14 @@
       .download-section {
         margin-top: 10px;
       }
-      .download-btn {
-        width: 100%;
+      .button-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+      .download-btn,
+      .view-btn {
+        flex: 1;
         padding: 8px 12px;
         background-color: #007bff;
         color: white;
@@ -29,19 +35,46 @@
         cursor: pointer;
         font-size: 13px;
       }
+      .view-btn {
+        background-color: #6c757d;
+      }
       .download-btn:hover {
         background-color: #0056b3;
+      }
+      .view-btn:hover {
+        background-color: #5a6268;
+      }
+      #subtitleContent {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        margin-top: 10px;
+        font-size: 13px;
+        line-height: 1.6;
+        display: none;
+        white-space: pre-wrap;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+        letter-spacing: -0.3px;
       }
       .no-subtitle {
         color: #666;
         font-size: 13px;
         text-align: center;
       }
+      #subtitleContent {
+        color: #666;
+      }
     </style>
   </head>
   <body>
     <div id="lectureTitle">강의 정보를 불러오는 중...</div>
     <div class="download-section" id="downloadList"></div>
+    <div id="subtitleContent"></div>
     <script src="popup.js"></script>
   </body>
 </html>
