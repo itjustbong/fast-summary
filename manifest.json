@@ -1,18 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "FastCampus Downloader",
+  "name": "FastCampus Subtitle Downloader",
   "version": "1.0",
-  "description": "FastCampus 강의 자료 다운로더",
-  "permissions": ["webRequest", "tabs", "downloads", "scripting"],
+  "description": "FastCampus 강의 자막 다운로더",
+  "permissions": ["webRequest", "tabs", "downloads", "scripting", "storage"],
   "host_permissions": [
     "https://fastcampus.co.kr/*",
     "https://*.kollus.com/*",
-    "https://fastcamp.ycdn.kollus.com/*"
+    "https://fastcamp.ycdn.kollus.com/*",
+    "https://chatgpt.com/*",
+    "https://www.chatgpt.com/*"
   ],
-  "action": {
-    "default_popup": "popup.html"
-  },
+  "content_scripts": [
+    {
+      "matches": ["*://chatgpt.com/*", "*://www.chatgpt.com/*"],
+      "js": ["chatgpt-content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "background": {
     "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
   }
 }

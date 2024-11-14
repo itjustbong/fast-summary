@@ -20,6 +20,7 @@ function parseSRT(srtContent) {
 
 document.addEventListener("DOMContentLoaded", () => {
   let currentLectureTitle = ""
+  let subtitleText = "" // 자막 텍스트를 저장할 변수 추가
 
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const currentTab = tabs[0]
@@ -61,11 +62,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return
       }
 
-      // 버튼 컨테이너 생성
       const buttonContainer = document.createElement("div")
       buttonContainer.className = "button-container"
 
-      // 자막 다운로드 버튼 (자막 URL이 있는 경우)
+      // 자막 다운로드 버튼
       if (response.subtitle) {
         const subtitleButton = document.createElement("button")
         subtitleButton.className = "download-btn"
@@ -90,17 +90,62 @@ document.addEventListener("DOMContentLoaded", () => {
           try {
             const res = await fetch(response.subtitle)
             const text = await res.text()
+            subtitleText = parseSRT(text) // 파싱된 자막 텍스트 저장
             subtitleContent.style.display = "block"
-            subtitleContent.textContent = parseSRT(text)
+            subtitleContent.textContent = subtitleText
           } catch (error) {
-            subtitleContent.textContent = "자막을 불러오는데 실패했습니다."
+            subtitleContent.textContent = "막을 불러오는데 실패했습니다."
             console.error("Error loading subtitle:", error)
           }
         }
         buttonContainer.appendChild(viewButton)
+
+        // ChatGPT로 요약하기 버튼 추가
+        const gptButton = document.createElement("button")
+        gptButton.className = "gpt-btn"
+        gptButton.textContent = "GPT로 요약하기"
+        gptButton.onclick = async () => {
+          try {
+            if (!subtitleText) {
+              const res = await fetch(response.subtitle)
+              const text = await res.text()
+              subtitleText = parseSRT(text)
+            }
+
+            const prompt = `이것은 IT/개발 관련 교육 영상의 자막입니다. 다음 내용을 아래 형식으로 정리해주세요:
+
+1. 주요 개념 및 키워드
+- 핵심 용어와 개념을 bullet point로 정리
+
+2. 상세 내용 정리
+- 강의 내용을 논리적 흐름에 따라 구조화하여 정리
+- 중요한 설명과 예시 포함
+- 실제 적용 방법이나 사용 사례 포함 (있는 경우)
+
+3. 추가 참고사항
+- 주의해야 할 점이나 팁 (있는 경우)
+- 연관된 개념이나 기술 (있는 경우)
+
+자막 내용:
+${subtitleText}`
+
+            // 프롬프트를 storage에 저장
+            await chrome.storage.local.set({ gptPrompt: prompt })
+            console.log("Subtitle saved to storage")
+
+            // ChatGPT 페이지 열기
+            await chrome.tabs.create({
+              url: "https://chatgpt.com/",
+            })
+          } catch (error) {
+            console.error("Error in GPT button click handler:", error)
+            alert("GPT 요약 준비 중 오류가 발생했습니다.")
+          }
+        }
+        buttonContainer.appendChild(gptButton)
       }
 
-      // 영상 다운로드 버튼 (영상 URL이 있는 경우)
+      // 영상 다운로드 버튼
       if (response.video) {
         const videoButton = document.createElement("button")
         videoButton.className = "video-btn"
