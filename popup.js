@@ -5,15 +5,15 @@ function parseSRT(srtContent) {
     .filter((block) => block.trim()) // 빈 블록 제거
     .map((block) => {
       const lines = block.split("\n")
-      // 시간 정보가 포함된 줄을 건너뛰고 나머지 텍스트만 추출
       return lines
         .filter((line) => !line.includes("-->")) // 시간 정보 줄 제외
+        .map((line) => line.replace(/^\d+\s*/, "")) // 각 줄 시작의 숫자 제거
         .join(" ")
         .replace(/<[^>]*>/g, "") // HTML 태그 제거
         .trim()
     })
     .filter((text) => text) // 빈 텍스트 제거
-    .join("\n\n") // 자막 텍스트 사이에 빈 줄 추가
+    .join("\n\n") // 자막 블록 사이에 빈 줄 추가
 
   return parsed
 }
