@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "FastCampus Downloader",
+  "version": "1.0",
+  "description": "FastCampus 강의 자료 다운로더",
+  "permissions": ["webRequest", "tabs", "downloads", "scripting"],
+  "host_permissions": [
+    "https://fastcampus.co.kr/*",
+    "https://*.kollus.com/*",
+    "https://fastcamp.ycdn.kollus.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
