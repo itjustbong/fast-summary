@@ -55,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const downloadList = document.getElementById("downloadList")
       const subtitleContent = document.getElementById("subtitleContent")
 
-      if (!response || !response.url) {
+      if (!response || (!response.subtitle && !response.video)) {
         downloadList.innerHTML =
-          "<p class='no-subtitle'>다운로드 가능한 자막 파일이 없습니다.</p>"
+          "<p class='no-subtitle'>다운로드 가능한 파일이 없습니다.</p>"
         return
       }
 
@@ -65,39 +65,52 @@ document.addEventListener("DOMContentLoaded", () => {
       const buttonContainer = document.createElement("div")
       buttonContainer.className = "button-container"
 
-      // 다운로드 버튼
-      const downloadButton = document.createElement("button")
-      downloadButton.className = "download-btn"
-      downloadButton.textContent = "자막 다운로드"
-      downloadButton.onclick = () => {
-        const filename = `${currentLectureTitle.replace(
-          /[/\\?%*:|"<>]/g,
-          "-"
-        )}.srt`
-        chrome.downloads.download({
-          url: response.url,
-          filename: filename,
-        })
-      }
-
-      // 자막 보기 버튼
-      const viewButton = document.createElement("button")
-      viewButton.className = "view-btn"
-      viewButton.textContent = "자막 보기"
-      viewButton.onclick = async () => {
-        try {
-          const res = await fetch(response.url)
-          const text = await res.text()
-          subtitleContent.style.display = "block"
-          subtitleContent.textContent = parseSRT(text)
-        } catch (error) {
-          subtitleContent.textContent = "자막을 불러오는데 실패했습니다."
-          console.error("Error loading subtitle:", error)
+      // 자막 다운로드 버튼 (자막 URL이 있는 경우)
+      if (response.subtitle) {
+        const subtitleButton = document.createElement("button")
+        subtitleButton.className = "download-btn"
+        subtitleButton.textContent = "자막 다운로드"
+        subtitleButton.onclick = () => {
+          const filename = `${currentLectureTitle.replace(
+            /[/\\?%*:|"<>]/g,
+            "-"
+          )}.srt`
+          chrome.downloads.download({
+            url: response.subtitle,
+            filename: filename,
+          })
         }
+        buttonContainer.appendChild(subtitleButton)
+
+        // 자막 보기 버튼
+        const viewButton = document.createElement("button")
+        viewButton.className = "view-btn"
+        viewButton.textContent = "자막 보기"
+        viewButton.onclick = async () => {
+          try {
+            const res = await fetch(response.subtitle)
+            const text = await res.text()
+            subtitleContent.style.display = "block"
+            subtitleContent.textContent = parseSRT(text)
+          } catch (error) {
+            subtitleContent.textContent = "자막을 불러오는데 실패했습니다."
+            console.error("Error loading subtitle:", error)
+          }
+        }
+        buttonContainer.appendChild(viewButton)
       }
 
-      buttonContainer.appendChild(downloadButton)
-      buttonContainer.appendChild(viewButton)
+      // 영상 다운로드 버튼 (영상 URL이 있는 경우)
+      if (response.video) {
+        const videoButton = document.createElement("button")
+        videoButton.className = "video-btn"
+        videoButton.textContent = "강의 다운로드"
+        videoButton.onclick = () => {
+          window.open(response.video, "_blank")
+        }
+        buttonContainer.appendChild(videoButton)
+      }
+
       downloadList.appendChild(buttonContainer)
     })
   })
