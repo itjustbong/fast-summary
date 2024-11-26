@@ -1,8 +1,13 @@
 {
   "manifest_version": 3,
   "name": "FastCampus Subtitle Downloader",
-  "version": "1.0",
-  "description": "FastCampus 강의 자막 다운로더",
+  "version": "1.0.0",
+  "description": "FastCampus 강의의 자막을 다운로드하고 GPT로 요약할 수 있는 확장 프로그램입니다.",
+  "icons": {
+    "48": "icons/fast_review_48.png",
+    "128": "icons/fast_review_128.png"
+  },
+  "author": "itjustbong",
   "permissions": ["webRequest", "tabs", "downloads", "scripting", "storage"],
   "host_permissions": [
     "https://fastcampus.co.kr/*",
@@ -22,6 +27,10 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/fast_review_48.png",
+      "128": "icons/fast_review_128.png"
+    }
   }
 }
