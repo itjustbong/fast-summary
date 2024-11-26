@@ -112,37 +112,134 @@ document.addEventListener("DOMContentLoaded", () => {
               subtitleText = parseSRT(text)
             }
 
-            const prompt = `이것은 IT/개발 관련 교육 영상의 자막입니다. 다음 내용을 아래 형식으로 정리해주세요:
+            const prompt = `당신은 IT/개발 교육 컨텐츠 전문 튜터입니다.
+아래는 IT/개발 관련 교육 영상의 자막입니다. 
+학습자의 이해를 돕기 위해 다음 형식으로 자세히 정리해주세요:
 
-1. 주요 개념 및 키워드
-- 핵심 용어와 개념을 bullet point로 정리
+1. 강의 핵심 요약 (2-3줄)
+- 이 강의에서 다루는 핵심 내용을 간단히 설명
 
-2. 상세 내용 정리
-- 강의 내용을 논리적 흐름에 따라 구조화하여 정리
-- 중요한 설명과 예시 포함
-- 실제 적용 방법이나 사용 사례 포함 (있는 경우)
+2. 주요 개념 및 용어 정리
+- 핵심 기술/개념 용어를 bullet point로 정리
+- 각 용어에 대한 간단한 설명 포함
 
-3. 추가 참고사항
-- 주의해야 할 점이나 팁 (있는 경우)
-- 연관된 개념이나 기술 (있는 경우)
+3. 상세 내용 분석
+- 강의 내용을 논리적 흐름에 따라 단계별로 구조화
+- 중요 개념의 실제 구현 방법과 예시 코드 포함
+- Best Practice와 실무 적용 팁 정리
+
+4. 학습 포인트
+- 실무에서 특히 주의해야 할 점
+- 관련 심화 학습 주제 추천
+- 연관된 기술스택이나 도구 소개
+
+주의: 자막에서 추출한 내용이므로 일부 오류가 있을 수 있습니다.
+전문 지식을 바탕으로 내용을 보완하고, 실무에 도움되는 인사이트를 추가해주세요.
 
 자막 내용:
 ${subtitleText}`
 
-            // 프롬프트를 storage에 저장
-            await chrome.storage.local.set({ gptPrompt: prompt })
-            console.log("Subtitle saved to storage")
+            subtitleContent.style.display = "block"
+            subtitleContent.textContent = prompt
 
-            // ChatGPT 페이지 열기
-            await chrome.tabs.create({
-              url: "https://chatgpt.com/",
-            })
+            // 복사하기 버튼 생성 및 추가
+            const copyButton = document.createElement("button")
+            copyButton.className = "copy-btn"
+            copyButton.textContent = "복사하기"
+            copyButton.onclick = () => {
+              navigator.clipboard
+                .writeText(prompt)
+                .then(() => alert("프롬프트가 복사되었습니다."))
+                .catch((err) => console.error("복사 실패:", err))
+            }
+
+            // 기존 복사 버튼이 있다면 제거
+            const existingCopyButton = document.querySelector(".copy-btn")
+            if (existingCopyButton) {
+              existingCopyButton.remove()
+            }
+
+            subtitleContent.parentNode.insertBefore(
+              copyButton,
+              subtitleContent.nextSibling
+            )
           } catch (error) {
             console.error("Error in GPT button click handler:", error)
             alert("GPT 요약 준비 중 오류가 발생했습니다.")
           }
         }
         buttonContainer.appendChild(gptButton)
+
+        // 요약 프롬프트 보기 버튼 추가
+        const showPromptButton = document.createElement("button")
+        showPromptButton.className = "prompt-btn"
+        showPromptButton.textContent = "요약 프롬프트 보기"
+        showPromptButton.onclick = async () => {
+          try {
+            if (!subtitleText) {
+              const res = await fetch(response.subtitle)
+              const text = await res.text()
+              subtitleText = parseSRT(text)
+            }
+
+            const prompt = `당신은 IT/개발 교육 컨텐츠 전문 튜터입니다.
+아래는 IT/개발 관련 교육 영상의 자막입니다. 
+학습자의 이해를 돕기 위해 다음 형식으로 자세히 정리해주세요:
+
+1. 강의 핵심 요약 (2-3줄)
+- 이 강의에서 다루는 핵심 내용을 간단히 설명
+
+2. 주요 개념 및 용어 정리
+- 핵심 기술/개념 용어를 bullet point로 정리
+- 각 용어에 대한 간단한 설명 포함
+
+3. 상세 내용 분석
+- 강의 내용을 논리적 흐름에 따라 단계별로 구조화
+- 중요 개념의 실제 구현 방법과 예시 코드 포함
+- Best Practice와 실무 적용 팁 정리
+
+4. 학습 포인트
+- 실무에서 특히 주의해야 할 점
+- 관련 심화 학습 주제 추천
+- 연관된 기술스택이나 도구 소개
+
+주의: 자막에서 추출한 내용이므로 일부 오류가 있을 수 있습니다.
+전문 지식을 바탕으로 내용을 보완하고, 실무에 도움되는 인사이트를 추가해주세요.
+
+자막 내용:
+${subtitleText}`
+
+            subtitleContent.style.display = "block"
+            subtitleContent.textContent = prompt
+
+            // 복사하기 버튼 생성 및 추가
+            const copyButton = document.createElement("button")
+            copyButton.className = "copy-btn"
+            copyButton.textContent = "복사하기"
+            copyButton.onclick = () => {
+              navigator.clipboard
+                .writeText(prompt)
+                .then(() => alert("프롬프트가 복사되었습니다."))
+                .catch((err) => console.error("복사 실패:", err))
+            }
+
+            // 기존 복사 버튼이 있다면 제거
+            const existingCopyButton = document.querySelector(".copy-btn")
+            if (existingCopyButton) {
+              existingCopyButton.remove()
+            }
+
+            subtitleContent.parentNode.insertBefore(
+              copyButton,
+              subtitleContent.nextSibling
+            )
+          } catch (error) {
+            console.error("Error showing prompt:", error)
+            subtitleContent.textContent =
+              "프롬프트를 표시하는 중 오류가 발생했습니다."
+          }
+        }
+        buttonContainer.appendChild(showPromptButton)
       }
 
       // 영상 다운로드 버튼
