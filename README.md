@@ -1,4 +1,4 @@
-# FastCampus Subtitle Downloader
+# FastCampus Summary Extension
 
 <p align="center">
   <img src="icons/fast_review_128.png" alt="FastCampus Subtitle Downloader Logo" width="128" height="128">
